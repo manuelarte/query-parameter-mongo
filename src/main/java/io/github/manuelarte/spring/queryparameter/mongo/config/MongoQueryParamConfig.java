@@ -25,12 +25,10 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.core.convert.ConversionService;
 
 @Configuration
 @Import(QueryCriteriaConfig.class)
-@Lazy
 public class MongoQueryParamConfig {
 
   @Bean("defaultTypeTransformer")
