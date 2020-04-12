@@ -50,7 +50,7 @@ public class QueryParameterArgumentResolver implements HandlerMethodArgumentReso
       final Class<?> documentEntity = queryParameter.document();
       final QueryCriteria queryCriteria = queryCriteriaParser.parse(q);
       final Query query = queryCriteriaToMongoQueryTransformer.apply(documentEntity, queryCriteria);
-      if (parameter.getParameterType().getClass().equals(Query.class)) {
+      if (parameter.getParameterType().equals(Query.class)) {
         return query;
       } else if (isValidOptional(parameter)) {
         return Optional.of(query);
@@ -59,7 +59,7 @@ public class QueryParameterArgumentResolver implements HandlerMethodArgumentReso
             + parameter.getParameterType().getClass());
       }
     } else {
-      if (parameter.getParameterType().getClass().equals(Query.class)) {
+      if (parameter.getParameterType().equals(Query.class)) {
         return null;
       } else if (isValidOptional(parameter)) {
         return Optional.empty();

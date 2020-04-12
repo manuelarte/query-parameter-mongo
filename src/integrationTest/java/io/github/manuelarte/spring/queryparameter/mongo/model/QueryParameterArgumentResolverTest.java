@@ -50,8 +50,24 @@ class QueryParameterArgumentResolverTest {
 	}
 
 	@Test
+	public void testArgumentResolverQueryNoQ() throws Exception {
+		mvc.perform(get("/api/parents").contentType(APPLICATION_JSON))
+				.andExpect(status().isOk()
+						//.andExpect(jsonPath("$.content", hasSize(1)
+				);
+	}
+
+	@Test
 	public void testArgumentResolverOptionalQuery() throws Exception {
 		mvc.perform(get("/api/optional/parents?q=firstName::Manuel").contentType(APPLICATION_JSON))
+				.andExpect(status().isOk()
+						//.andExpect(jsonPath("$.content", hasSize(1)
+				);
+	}
+
+	@Test
+	public void testArgumentResolverOptionalQueryNoQ() throws Exception {
+		mvc.perform(get("/api/optional/parents").contentType(APPLICATION_JSON))
 				.andExpect(status().isOk()
 						//.andExpect(jsonPath("$.content", hasSize(1)
 				);
