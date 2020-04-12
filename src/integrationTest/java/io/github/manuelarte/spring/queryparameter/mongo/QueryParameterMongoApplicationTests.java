@@ -18,9 +18,10 @@ import org.bson.types.ObjectId;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -28,8 +29,6 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.query.Query;
 
 @SpringBootTest
-@EnableQueryParameter
-@EnableAutoConfiguration
 @Import({ QueryParameterMongoApplicationTests.ItConfiguration.class })
 class QueryParameterMongoApplicationTests {
 
@@ -86,8 +85,13 @@ class QueryParameterMongoApplicationTests {
 		return parentEntity;
 	}
 
-	@Configuration
+	@SpringBootApplication
+	@EnableQueryParameter
 	public static class ItConfiguration {
+
+		public static void main(String[] args) {
+			SpringApplication.run(ItConfiguration.class, args);
+		}
 
 		@Document
 		public static class ParentEntity {
