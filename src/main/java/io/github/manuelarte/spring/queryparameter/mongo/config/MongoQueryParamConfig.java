@@ -1,6 +1,7 @@
 package io.github.manuelarte.spring.queryparameter.mongo.config;
 
 import io.github.manuelarte.spring.queryparameter.config.QueryCriteriaConfig;
+import io.github.manuelarte.spring.queryparameter.model.TypeTransformerProvider;
 import io.github.manuelarte.spring.queryparameter.model.TypeTransformerRegistry;
 import io.github.manuelarte.spring.queryparameter.mongo.model.OperatorCriteriaProvider;
 import io.github.manuelarte.spring.queryparameter.mongo.model.OperatorCriteriaProviderImpl;
@@ -21,7 +22,6 @@ import io.github.manuelarte.spring.queryparameter.operators.LowerThanOrEqualsOpe
 import io.github.manuelarte.spring.queryparameter.operators.Operator;
 import io.github.manuelarte.spring.queryparameter.transformers.ClassFieldTransformerImpl;
 import io.github.manuelarte.spring.queryparameter.transformers.TypeTransformer;
-import io.github.manuelarte.spring.queryparameter.model.TypeTransformerProvider;
 import io.github.manuelarte.spring.queryparameter.util.TriPredicate;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -81,7 +81,8 @@ public class MongoQueryParamConfig {
   public QueryCriteriaToMongoQueryTransformer queryCriteriaToMongoQueryTransformer(
       final TypeTransformerProvider typeTransformerProvider,
       final OperatorCriteriaProvider operatorsPredicateProvider) {
-    return new QueryCriteriaToMongoQueryTransformerImpl(typeTransformerProvider, operatorsPredicateProvider);
+    return new QueryCriteriaToMongoQueryTransformerImpl(typeTransformerProvider,
+        operatorsPredicateProvider);
   }
 
   private TriPredicate<Class<?>, String, Operator<Object>> isOperator(

@@ -6,8 +6,6 @@ import io.github.manuelarte.spring.queryparameter.mongo.QueryParameter;
 import io.github.manuelarte.spring.queryparameter.mongo.transformers.QueryCriteriaToMongoQueryTransformer;
 import io.github.manuelarte.spring.queryparameter.query.QueryCriteria;
 import java.lang.reflect.ParameterizedType;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
 import org.springframework.context.annotation.Lazy;

@@ -11,6 +11,7 @@ import java.lang.annotation.Target;
 public @interface QueryParameter {
 
   Class<?> document();
+
   String paramName() default "q";
 
 }

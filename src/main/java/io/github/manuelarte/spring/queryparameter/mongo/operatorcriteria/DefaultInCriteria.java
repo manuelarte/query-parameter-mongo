@@ -9,7 +9,7 @@ public class DefaultInCriteria<V> implements OperatorCriteria<V> {
 
   @Override
   public Criteria apply(final String key, final V value) {
-    return Criteria.where(key).in( (Collection)value );
+    return Criteria.where(key).in((Collection) value);
   }
 
 

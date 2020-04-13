@@ -9,16 +9,15 @@ import io.github.manuelarte.spring.queryparameter.query.OtherCriteria;
 import io.github.manuelarte.spring.queryparameter.query.QueryCriteria;
 import io.github.manuelarte.spring.queryparameter.query.QueryCriterion;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
-public class QueryCriteriaToMongoQueryTransformerImpl implements QueryCriteriaToMongoQueryTransformer {
+public class QueryCriteriaToMongoQueryTransformerImpl implements
+    QueryCriteriaToMongoQueryTransformer {
 
   private final TypeTransformerProvider typeTransformerProvider;
   private final OperatorCriteriaProvider operatorCriteriaProvider;
@@ -35,7 +34,8 @@ public class QueryCriteriaToMongoQueryTransformerImpl implements QueryCriteriaTo
     if (queryCriteria == null) {
       return null;
     } else {
-      final MultiValueMap<BooleanOperator, QueryCriterion> grouped = groupByBooleanOperator(queryCriteria);
+      final MultiValueMap<BooleanOperator, QueryCriterion> grouped = groupByBooleanOperator(
+          queryCriteria);
       final Criteria criteria = new Criteria();
       grouped.keySet().forEach(qO -> {
         Criteria[] qOCriteria = grouped.get(qO).stream().map(it -> createCriteria(entity, it))
@@ -75,9 +75,10 @@ public class QueryCriteriaToMongoQueryTransformerImpl implements QueryCriteriaTo
   private Criteria createCriteria(final Class<?> entity, final QueryCriterion queryCriterion) {
     final Object castedValue;
     if (queryCriterion.getValue() instanceof List) {
-      castedValue = ((List)queryCriterion.getValue()).stream().map(it -> typeTransformerProvider.getTransformer(entity,
-          queryCriterion.getKey()).transformValue(entity, queryCriterion.getKey(),
-          it)).collect(Collectors.toList());
+      castedValue = ((List) queryCriterion.getValue()).stream()
+          .map(it -> typeTransformerProvider.getTransformer(entity,
+              queryCriterion.getKey()).transformValue(entity, queryCriterion.getKey(),
+              it)).collect(Collectors.toList());
     } else {
       castedValue = typeTransformerProvider.getTransformer(entity,
           queryCriterion.getKey()).transformValue(entity, queryCriterion.getKey(),

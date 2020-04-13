@@ -1,10 +1,10 @@
 plugins {
-	id 'io.spring.dependency-management' version '1.0.9.RELEASE'
-	id 'java'
-	id "nebula.facet" version "7.0.8"
-	id 'com.palantir.git-version' version '0.12.3'
-	id 'maven-publish'
-	id "com.jfrog.bintray" version "1.8.5"
+    id 'io.spring.dependency-management' version '1.0.9.RELEASE'
+    id 'java'
+    id "nebula.facet" version "7.0.8"
+    id 'com.palantir.git-version' version '0.12.3'
+    id 'maven-publish'
+    id "com.jfrog.bintray" version "1.8.5"
 }
 
 group = 'io.github.manuelarte.spring'
@@ -12,126 +12,126 @@ version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '1.8'
 
 repositories {
-	mavenLocal()
-	mavenCentral()
-	maven { url  "https://dl.bintray.com/manueldoncelmartos/query-parameter" }
+    mavenLocal()
+    mavenCentral()
+    maven { url "https://dl.bintray.com/manueldoncelmartos/query-parameter" }
 }
 
 facets {
-	integrationTest {
-		parentSourceSet = 'main'
-		testTaskName = 'integrationTest'
-		includeInCheckLifecycle = true
-	}
+    integrationTest {
+        parentSourceSet = 'main'
+        testTaskName = 'integrationTest'
+        includeInCheckLifecycle = true
+    }
 }
 
 configurations {
-	developmentOnly
-	runtimeClasspath {
-		extendsFrom developmentOnly
-	}
+    developmentOnly
+    runtimeClasspath {
+        extendsFrom developmentOnly
+    }
 }
 
 dependencies {
-	implementation 'io.github.manuelarte.spring:query-parameter-model:0.0.1-SNAPSHOT'
+    implementation 'io.github.manuelarte.spring:query-parameter-model:0.0.1-SNAPSHOT'
 
-	compileOnly 'org.springframework.boot:spring-boot-starter-data-mongodb:2.2.6.RELEASE'
-	compileOnly 'org.springframework.boot:spring-boot-starter-web:2.2.6.RELEASE'
+    compileOnly 'org.springframework.boot:spring-boot-starter-data-mongodb:2.2.6.RELEASE'
+    compileOnly 'org.springframework.boot:spring-boot-starter-web:2.2.6.RELEASE'
 
-	integrationTestImplementation('org.springframework.boot:spring-boot-starter-test:2.2.6.RELEASE') {
-		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
-	}
-	integrationTestImplementation 'org.springframework.boot:spring-boot-starter-web:2.2.6.RELEASE'
-	integrationTestImplementation 'org.springframework.boot:spring-boot-starter-data-mongodb:2.2.6.RELEASE'
-	integrationTestImplementation 'de.flapdoodle.embed:de.flapdoodle.embed.mongo:2.2.0'
+    integrationTestImplementation('org.springframework.boot:spring-boot-starter-test:2.2.6.RELEASE') {
+        exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+    }
+    integrationTestImplementation 'org.springframework.boot:spring-boot-starter-web:2.2.6.RELEASE'
+    integrationTestImplementation 'org.springframework.boot:spring-boot-starter-data-mongodb:2.2.6.RELEASE'
+    integrationTestImplementation 'de.flapdoodle.embed:de.flapdoodle.embed.mongo:2.2.0'
 }
 
 test {
-	useJUnitPlatform()
+    useJUnitPlatform()
 }
 
 integrationTest {
-	useJUnitPlatform()
+    useJUnitPlatform()
 }
 
 jar {
-	enabled = true
+    enabled = true
 }
 
 task sourceJar(type: Jar) {
-	from sourceSets.main.allSource
-	archiveClassifier = "sources"
+    from sourceSets.main.allSource
+    archiveClassifier = "sources"
 }
 
 bintray {
-	user = project.hasProperty('bintrayUser') ? project.property('bintrayUser') : System.getenv('BINTRAY_USER')
-	key = project.hasProperty('bintrayApiKey') ? project.property('bintrayApiKey') : System.getenv('BINTRAY_API_KEY')
-	pkg {
-		repo = 'query-parameter'
-		name = 'query-parameter-mongo'
-		userOrg = 'manueldoncelmartos'
-		licenses = ['Apache-2.0']
-		vcsUrl = 'https://github.com/manuelarte/query-parameter-mongo'
-		publicDownloadNumbers = true
-		version {
-			name = rootProject.version
-			desc = 'Query Parameter Mongo library to be used with Spring Mongo Data'
-			released  = new Date()
-			vcsTag = rootProject.version
-		}
-	}
-	publications = ['BintrayPublication']
+    user = project.hasProperty('bintrayUser') ? project.property('bintrayUser') : System.getenv('BINTRAY_USER')
+    key = project.hasProperty('bintrayApiKey') ? project.property('bintrayApiKey') : System.getenv('BINTRAY_API_KEY')
+    pkg {
+        repo = 'query-parameter'
+        name = 'query-parameter-mongo'
+        userOrg = 'manueldoncelmartos'
+        licenses = ['Apache-2.0']
+        vcsUrl = 'https://github.com/manuelarte/query-parameter-mongo'
+        publicDownloadNumbers = true
+        version {
+            name = rootProject.version
+            desc = 'Query Parameter Mongo library to be used with Spring Mongo Data'
+            released = new Date()
+            vcsTag = rootProject.version
+        }
+    }
+    publications = ['BintrayPublication']
 }
 
 publishing {
-	publications {
-		mavenJava(MavenPublication) {
-			from components.java
-			artifact sourceJar
-			pom {
-				name = 'Mongo Query Parameter Library'
-				description = 'Library to use query parameter with MongoDB'
-				url = 'http://www.example.com/library'
-				licenses {
-					license {
-						name = 'The Apache License, Version 2.0'
-						url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-					}
-				}
-				developers {
-					developer {
-						id = 'manuelarte'
-						name = 'Manuel Doncel Martos'
-						email = 'manueldoncelmartos@gmail.com'
-					}
-				}
-				scm {
-					connection = 'scm:git:git://example.com/my-library.git'
-					developerConnection = 'scm:git:ssh://example.com/my-library.git'
-					url = 'http://example.com/my-library/'
-				}
-			}
-		}
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+            artifact sourceJar
+            pom {
+                name = 'Mongo Query Parameter Library'
+                description = 'Library to use query parameter with MongoDB'
+                url = 'http://www.example.com/library'
+                licenses {
+                    license {
+                        name = 'The Apache License, Version 2.0'
+                        url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    }
+                }
+                developers {
+                    developer {
+                        id = 'manuelarte'
+                        name = 'Manuel Doncel Martos'
+                        email = 'manueldoncelmartos@gmail.com'
+                    }
+                }
+                scm {
+                    connection = 'scm:git:git://example.com/my-library.git'
+                    developerConnection = 'scm:git:ssh://example.com/my-library.git'
+                    url = 'http://example.com/my-library/'
+                }
+            }
+        }
 
-		BintrayPublication(MavenPublication) {
-			from components.java
-			groupId group
-			artifactId rootProject.name
-			pom {
-				name = 'Query Parameter MongoDB Library'
-				description = 'Library to use query parameter to use with MongoDB'
-				url = 'https://github.com/manuelarte/query-parameter-mongo'
-				developers {
-					developer {
-						id = 'manuelarte'
-						name = 'Manuel Doncel Martos'
-						email = 'manueldoncelmartos@gmail.com'
-					}
-				}
-				scm {
-					url = 'https://github.com/manuelarte/query-parameter-mongo'
-				}
-			}
-		}
-	}
+        BintrayPublication(MavenPublication) {
+            from components.java
+            groupId group
+            artifactId rootProject.name
+            pom {
+                name = 'Query Parameter MongoDB Library'
+                description = 'Library to use query parameter to use with MongoDB'
+                url = 'https://github.com/manuelarte/query-parameter-mongo'
+                developers {
+                    developer {
+                        id = 'manuelarte'
+                        name = 'Manuel Doncel Martos'
+                        email = 'manueldoncelmartos@gmail.com'
+                    }
+                }
+                scm {
+                    url = 'https://github.com/manuelarte/query-parameter-mongo'
+                }
+            }
+        }
+    }
 }

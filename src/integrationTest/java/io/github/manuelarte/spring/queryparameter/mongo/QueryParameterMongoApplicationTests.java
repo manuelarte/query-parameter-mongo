@@ -21,7 +21,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
@@ -31,110 +30,115 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.query.Query;
 
 @SpringBootTest
-@Import({ QueryParameterMongoApplicationTests.ItConfiguration.class })
+@Import({QueryParameterMongoApplicationTests.ItConfiguration.class})
 class QueryParameterMongoApplicationTests {
 
-	@Autowired
-	private QueryCriteriaToMongoQueryTransformer queryCriteriaToMongoQueryTransformer;
+  @Autowired
+  private QueryCriteriaToMongoQueryTransformer queryCriteriaToMongoQueryTransformer;
 
-	@Autowired
-	private MongoTemplate mongoTemplate;
+  @Autowired
+  private MongoTemplate mongoTemplate;
 
-	@Test
-	void contextLoads() {
-	}
+  @Test
+  void contextLoads() {
+  }
 
-	@AfterEach
-	public void tearDown() {
-		this.mongoTemplate.dropCollection(ParentEntity.class);
-	}
+  @AfterEach
+  public void tearDown() {
+    this.mongoTemplate.dropCollection(ParentEntity.class);
+  }
 
-	@Test
-	public void testGetParentEntityOneCriterion() {
-		final ParentEntity one = mongoTemplate.save(createParentEntity("Manuel", "Doncel", 33));
-		mongoTemplate.save(createParentEntity("Manuel", "Neuer", 10));
-		final ParentEntity three = mongoTemplate.save(createParentEntity("Elisa", "Doncel", 31));
-		final QueryCriteria queryCriteria = QueryCriteria.builder()
-				.criterion(new QueryCriterion("lastName", new EqualsOperator(), "Doncel"))
-				.build();
-		final Query query = queryCriteriaToMongoQueryTransformer.apply(ParentEntity.class, queryCriteria);
-		final List<ParentEntity> actual = mongoTemplate.find(query, ParentEntity.class);
-		assertEquals(2, actual.size());
-		assertThat(actual, containsInAnyOrder(one, three));
-	}
+  @Test
+  public void testGetParentEntityOneCriterion() {
+    final ParentEntity one = mongoTemplate.save(createParentEntity("Manuel", "Doncel", 33));
+    mongoTemplate.save(createParentEntity("Manuel", "Neuer", 10));
+    final ParentEntity three = mongoTemplate.save(createParentEntity("Elisa", "Doncel", 31));
+    final QueryCriteria queryCriteria = QueryCriteria.builder()
+        .criterion(new QueryCriterion("lastName", new EqualsOperator(), "Doncel"))
+        .build();
+    final Query query = queryCriteriaToMongoQueryTransformer
+        .apply(ParentEntity.class, queryCriteria);
+    final List<ParentEntity> actual = mongoTemplate.find(query, ParentEntity.class);
+    assertEquals(2, actual.size());
+    assertThat(actual, containsInAnyOrder(one, three));
+  }
 
-	@Test
-	public void testGetParentEntityTwoCriterion() {
-		mongoTemplate.save(createParentEntity("Manuel", "Doncel", 33));
-		final ParentEntity two = mongoTemplate.save(createParentEntity("Manuel", "Neuer", 10));
-		mongoTemplate.save(createParentEntity("Elisa", "Doncel", 31));
-		final QueryCriteria queryCriteria = QueryCriteria.builder()
-				.criterion(new QueryCriterion("firstName", new EqualsOperator(), "Manuel"))
-				.other(new OtherCriteria(BooleanOperator.AND,
-						new QueryCriteria(new QueryCriterion("age", new LowerThanOperator(), "18"))))
-				.build();
-		final Query query = queryCriteriaToMongoQueryTransformer.apply(ParentEntity.class, queryCriteria);
-		final List<ParentEntity> actual = mongoTemplate.find(query, ParentEntity.class);
-		assertEquals(1, actual.size());
-		assertEquals(two, actual.get(0));
-	}
+  @Test
+  public void testGetParentEntityTwoCriterion() {
+    mongoTemplate.save(createParentEntity("Manuel", "Doncel", 33));
+    final ParentEntity two = mongoTemplate.save(createParentEntity("Manuel", "Neuer", 10));
+    mongoTemplate.save(createParentEntity("Elisa", "Doncel", 31));
+    final QueryCriteria queryCriteria = QueryCriteria.builder()
+        .criterion(new QueryCriterion("firstName", new EqualsOperator(), "Manuel"))
+        .other(new OtherCriteria(BooleanOperator.AND,
+            new QueryCriteria(new QueryCriterion("age", new LowerThanOperator(), "18"))))
+        .build();
+    final Query query = queryCriteriaToMongoQueryTransformer
+        .apply(ParentEntity.class, queryCriteria);
+    final List<ParentEntity> actual = mongoTemplate.find(query, ParentEntity.class);
+    assertEquals(1, actual.size());
+    assertEquals(two, actual.get(0));
+  }
 
-	@Test
-	public void testGetParentEntityInCriterion() {
-		final ParentEntity one = mongoTemplate.save(createParentEntity("Manuel", "Doncel", 33));
-		final ParentEntity two = mongoTemplate.save(createParentEntity("Manuel", "Neuer", 10));
-		mongoTemplate.save(createParentEntity("Elisa", "Doncel", 31));
-		final QueryCriteria queryCriteria = QueryCriteria.builder()
-				.criterion(new QueryCriterion<>("age", new InOperator(), Arrays.asList("33", "10")))
-				.build();
-		final Query query = queryCriteriaToMongoQueryTransformer.apply(ParentEntity.class, queryCriteria);
-		final List<ParentEntity> actual = mongoTemplate.find(query, ParentEntity.class);
-		assertEquals(2, actual.size());
-		assertThat(actual, containsInAnyOrder(one, two));
-	}
+  @Test
+  public void testGetParentEntityInCriterion() {
+    final ParentEntity one = mongoTemplate.save(createParentEntity("Manuel", "Doncel", 33));
+    final ParentEntity two = mongoTemplate.save(createParentEntity("Manuel", "Neuer", 10));
+    mongoTemplate.save(createParentEntity("Elisa", "Doncel", 31));
+    final QueryCriteria queryCriteria = QueryCriteria.builder()
+        .criterion(new QueryCriterion<>("age", new InOperator(), Arrays.asList("33", "10")))
+        .build();
+    final Query query = queryCriteriaToMongoQueryTransformer
+        .apply(ParentEntity.class, queryCriteria);
+    final List<ParentEntity> actual = mongoTemplate.find(query, ParentEntity.class);
+    assertEquals(2, actual.size());
+    assertThat(actual, containsInAnyOrder(one, two));
+  }
 
-	private ParentEntity createParentEntity(final String firstName, final String lastName, final int age) {
-		final ParentEntity parentEntity = new ParentEntity();
-		parentEntity.firstName = firstName;
-		parentEntity.lastName = lastName;
-		parentEntity.age = age;
-		return parentEntity;
-	}
+  private ParentEntity createParentEntity(final String firstName, final String lastName,
+      final int age) {
+    final ParentEntity parentEntity = new ParentEntity();
+    parentEntity.firstName = firstName;
+    parentEntity.lastName = lastName;
+    parentEntity.age = age;
+    return parentEntity;
+  }
 
-	@SpringBootApplication
-	@EnableQueryParameter
-	public static class ItConfiguration {
+  @SpringBootApplication
+  @EnableQueryParameter
+  public static class ItConfiguration {
 
-		public static void main(String[] args) {
-			SpringApplication.run(ItConfiguration.class, args);
-		}
+    public static void main(String[] args) {
+      SpringApplication.run(ItConfiguration.class, args);
+    }
 
-		@Document
-		public static class ParentEntity {
-			@Id
-			private ObjectId id;
-			private String firstName;
-			private String lastName;
-			private int age;
+    @Document
+    public static class ParentEntity {
 
-			@Override
-			public boolean equals(Object o) {
-				if (this == o) {
-					return true;
-				}
-				if (o == null || getClass() != o.getClass()) {
-					return false;
-				}
-				ParentEntity that = (ParentEntity) o;
-				return Objects.equals(id, that.id);
-			}
+      @Id
+      private ObjectId id;
+      private String firstName;
+      private String lastName;
+      private int age;
 
-			@Override
-			public int hashCode() {
-				return Objects.hash(id);
-			}
-		}
+      @Override
+      public boolean equals(Object o) {
+        if (this == o) {
+          return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+          return false;
+        }
+        ParentEntity that = (ParentEntity) o;
+        return Objects.equals(id, that.id);
+      }
 
-	}
+      @Override
+      public int hashCode() {
+        return Objects.hash(id);
+      }
+    }
+
+  }
 
 }
