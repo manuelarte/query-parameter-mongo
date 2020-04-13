@@ -1,6 +1,7 @@
 package io.github.manuelarte.spring.queryparameter.mongo.config;
 
 import io.github.manuelarte.spring.queryparameter.config.QueryCriteriaConfig;
+import io.github.manuelarte.spring.queryparameter.model.TypeTransformerRegistry;
 import io.github.manuelarte.spring.queryparameter.mongo.model.OperatorCriteriaProvider;
 import io.github.manuelarte.spring.queryparameter.mongo.model.OperatorCriteriaProviderImpl;
 import io.github.manuelarte.spring.queryparameter.mongo.operatorcriteria.DefaultEqualsCriteria;
@@ -18,8 +19,9 @@ import io.github.manuelarte.spring.queryparameter.operators.LowerThanOrEqualsOpe
 import io.github.manuelarte.spring.queryparameter.operators.Operator;
 import io.github.manuelarte.spring.queryparameter.transformers.ClassFieldTransformerImpl;
 import io.github.manuelarte.spring.queryparameter.transformers.TypeTransformer;
-import io.github.manuelarte.spring.queryparameter.transformers.TypeTransformerProvider;
+import io.github.manuelarte.spring.queryparameter.model.TypeTransformerProvider;
 import io.github.manuelarte.spring.queryparameter.util.TriPredicate;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
@@ -31,8 +33,13 @@ import org.springframework.core.convert.ConversionService;
 @Import(QueryCriteriaConfig.class)
 public class MongoQueryParamConfig {
 
+  private final List<QueryParameterConfig> queryParameterConfigs;
+
+  public MongoQueryParamConfig(final List<QueryParameterConfig> queryParameterConfigs) {
+    this.queryParameterConfigs = queryParameterConfigs;
+  }
+
   @Bean("defaultTypeTransformer")
-  @ConditionalOnMissingBean
   public TypeTransformer defaultTypeTransformer(final ConversionService conversionService) {
     return new ClassFieldTransformerImpl(conversionService);
   }
@@ -40,8 +47,12 @@ public class MongoQueryParamConfig {
   @Bean
   @ConditionalOnMissingBean
   public TypeTransformerProvider typeTransformerProvider(
-      @Qualifier("defaultTypeTransformer") TypeTransformer typeTransformer) {
-    return new TypeTransformerProvider(typeTransformer);
+      @Qualifier("defaultTypeTransformer") final TypeTransformer typeTransformer,
+      final TypeTransformerRegistry typeTransformerRegistry) {
+    queryParameterConfigs.forEach(it -> it.addTypeTransformer(typeTransformerRegistry));
+    final TypeTransformerProvider typeTransformerProvider =
+        new TypeTransformerProvider(typeTransformerRegistry, typeTransformer);
+    return typeTransformerProvider;
   }
 
   @Bean

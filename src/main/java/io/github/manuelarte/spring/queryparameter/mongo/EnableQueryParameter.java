@@ -1,6 +1,7 @@
 package io.github.manuelarte.spring.queryparameter.mongo;
 
 import io.github.manuelarte.spring.queryparameter.config.QueryCriteriaConfig;
+import io.github.manuelarte.spring.queryparameter.model.TypeTransformerRegistry;
 import io.github.manuelarte.spring.queryparameter.mongo.config.MongoQueryParamConfig;
 import io.github.manuelarte.spring.queryparameter.mongo.config.WebMvcConfig;
 import io.github.manuelarte.spring.queryparameter.mongo.model.QueryParameterArgumentResolver;
@@ -22,6 +23,7 @@ import org.springframework.context.annotation.Import;
     QueryCriteriaConfig.class,
     QueryParameterArgumentResolver.class,
     WebMvcConfig.class,
+    TypeTransformerRegistry.class,
     MongoQueryParamConfig.class
 })
 @SuppressWarnings("unused")

@@ -1,5 +1,6 @@
 package io.github.manuelarte.spring.queryparameter.mongo.transformers;
 
+import io.github.manuelarte.spring.queryparameter.model.TypeTransformerProvider;
 import io.github.manuelarte.spring.queryparameter.mongo.model.OperatorCriteriaProvider;
 import io.github.manuelarte.spring.queryparameter.mongo.operatorcriteria.OperatorCriteria;
 import io.github.manuelarte.spring.queryparameter.operators.Operator;
@@ -7,10 +8,15 @@ import io.github.manuelarte.spring.queryparameter.query.BooleanOperator;
 import io.github.manuelarte.spring.queryparameter.query.OtherCriteria;
 import io.github.manuelarte.spring.queryparameter.query.QueryCriteria;
 import io.github.manuelarte.spring.queryparameter.query.QueryCriterion;
-import io.github.manuelarte.spring.queryparameter.transformers.TypeTransformerProvider;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 
 public class QueryCriteriaToMongoQueryTransformerImpl implements QueryCriteriaToMongoQueryTransformer {
 
@@ -29,22 +35,41 @@ public class QueryCriteriaToMongoQueryTransformerImpl implements QueryCriteriaTo
     if (queryCriteria == null) {
       return null;
     } else {
-      final QueryCriterion queryCriterion = queryCriteria.getCriterion();
-      final Criteria criteriaAcc = createCriteria(entity, queryCriterion);
-      Optional<OtherCriteria> otherCriteriaOptional = queryCriteria.getOther();
-      while (otherCriteriaOptional.isPresent()) {
-        final OtherCriteria other = otherCriteriaOptional.get();
-        final QueryCriteria newQueryCriteria = other.getCriteria();
-        final QueryCriterion newQueryCriterion = newQueryCriteria.getCriterion();
-        if (BooleanOperator.AND == other.getOperator()) {
-          criteriaAcc.andOperator(createCriteria(entity, newQueryCriterion));
-        } else if (BooleanOperator.OR == other.getOperator()) {
-          criteriaAcc.orOperator(createCriteria(entity, newQueryCriterion));
+      final MultiValueMap<BooleanOperator, QueryCriterion> grouped = groupByBooleanOperator(queryCriteria);
+      final Criteria criteria = new Criteria();
+      grouped.keySet().forEach(qO -> {
+        Criteria[] qOCriteria = grouped.get(qO).stream().map(it -> createCriteria(entity, it))
+            .toArray(size -> new Criteria[size]);
+        switch (qO) {
+          case AND:
+            criteria.andOperator(qOCriteria);
+            break;
+          case OR:
+            criteria.orOperator(qOCriteria);
+            break;
+          default:
+            throw new RuntimeException(qO + " operator not found");
         }
-        otherCriteriaOptional = newQueryCriteria.getOther();
-      }
-      return new Query(criteriaAcc);
+      });
+      return new Query(criteria);
     }
+  }
+
+  private MultiValueMap<BooleanOperator, QueryCriterion> groupByBooleanOperator(
+      final QueryCriteria queryCriteria) {
+    final MultiValueMap<BooleanOperator, QueryCriterion> multiValueMap =
+        new LinkedMultiValueMap<>();
+    // add first query criterion
+    multiValueMap.add(BooleanOperator.AND, queryCriteria.getCriterion());
+    Optional<OtherCriteria> otherCriteriaOptional = queryCriteria.getOther();
+    while (otherCriteriaOptional.isPresent()) {
+      final OtherCriteria other = otherCriteriaOptional.get();
+      final QueryCriteria newQueryCriteria = other.getCriteria();
+      final QueryCriterion newQueryCriterion = newQueryCriteria.getCriterion();
+      multiValueMap.add(other.getOperator(), newQueryCriterion);
+      otherCriteriaOptional = newQueryCriteria.getOther();
+    }
+    return multiValueMap;
   }
 
   private Criteria createCriteria(final Class<?> entity, final QueryCriterion queryCriterion) {
