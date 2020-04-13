@@ -33,7 +33,7 @@ configurations {
 }
 
 dependencies {
-	implementation 'io.github.manuelarte.spring:query-parameter-model:0.0.1'
+	implementation 'io.github.manuelarte.spring:query-parameter-model:0.0.1-SNAPSHOT'
 
 	compileOnly 'org.springframework.boot:spring-boot-starter-data-mongodb:2.2.6.RELEASE'
 	compileOnly 'org.springframework.boot:spring-boot-starter-web:2.2.6.RELEASE'

@@ -73,9 +73,16 @@ public class QueryCriteriaToMongoQueryTransformerImpl implements QueryCriteriaTo
   }
 
   private Criteria createCriteria(final Class<?> entity, final QueryCriterion queryCriterion) {
-    final Object castedValue = typeTransformerProvider.getTransformer(entity,
-        queryCriterion.getKey()).transformValue(entity, queryCriterion.getKey(),
-        queryCriterion.getValue());
+    final Object castedValue;
+    if (queryCriterion.getValue() instanceof List) {
+      castedValue = ((List)queryCriterion.getValue()).stream().map(it -> typeTransformerProvider.getTransformer(entity,
+          queryCriterion.getKey()).transformValue(entity, queryCriterion.getKey(),
+          it)).collect(Collectors.toList());
+    } else {
+      castedValue = typeTransformerProvider.getTransformer(entity,
+          queryCriterion.getKey()).transformValue(entity, queryCriterion.getKey(),
+          queryCriterion.getValue());
+    }
     final OperatorCriteria<Object> operatorPredicate = operatorCriteriaProvider
         .getOperatorCriteria(entity, queryCriterion.getKey(),
             (Operator<Object>) queryCriterion.getOperator());

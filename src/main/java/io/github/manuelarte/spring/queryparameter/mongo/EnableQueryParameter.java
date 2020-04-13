@@ -8,6 +8,7 @@ import io.github.manuelarte.spring.queryparameter.mongo.model.QueryParameterArgu
 import io.github.manuelarte.spring.queryparameter.operators.EqualsOperator;
 import io.github.manuelarte.spring.queryparameter.operators.GreaterThanOperator;
 import io.github.manuelarte.spring.queryparameter.operators.GreaterThanOrEqualsOperator;
+import io.github.manuelarte.spring.queryparameter.operators.InOperator;
 import io.github.manuelarte.spring.queryparameter.operators.LowerThanOperator;
 import io.github.manuelarte.spring.queryparameter.operators.LowerThanOrEqualsOperator;
 import java.lang.annotation.ElementType;
@@ -19,7 +20,7 @@ import org.springframework.context.annotation.Import;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Import({EqualsOperator.class, GreaterThanOrEqualsOperator.class, GreaterThanOperator.class,
-    LowerThanOrEqualsOperator.class, LowerThanOperator.class,
+    LowerThanOrEqualsOperator.class, LowerThanOperator.class, InOperator.class,
     QueryCriteriaConfig.class,
     QueryParameterArgumentResolver.class,
     WebMvcConfig.class,

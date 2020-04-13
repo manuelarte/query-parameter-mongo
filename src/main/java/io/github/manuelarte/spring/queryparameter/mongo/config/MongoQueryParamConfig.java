@@ -7,6 +7,7 @@ import io.github.manuelarte.spring.queryparameter.mongo.model.OperatorCriteriaPr
 import io.github.manuelarte.spring.queryparameter.mongo.operatorcriteria.DefaultEqualsCriteria;
 import io.github.manuelarte.spring.queryparameter.mongo.operatorcriteria.DefaultGreaterThanCriteria;
 import io.github.manuelarte.spring.queryparameter.mongo.operatorcriteria.DefaultGreaterThanOrEqualsCriteria;
+import io.github.manuelarte.spring.queryparameter.mongo.operatorcriteria.DefaultInCriteria;
 import io.github.manuelarte.spring.queryparameter.mongo.operatorcriteria.DefaultLowerThanCriteria;
 import io.github.manuelarte.spring.queryparameter.mongo.operatorcriteria.DefaultLowerThanOrEqualsCriteria;
 import io.github.manuelarte.spring.queryparameter.mongo.transformers.QueryCriteriaToMongoQueryTransformer;
@@ -14,6 +15,7 @@ import io.github.manuelarte.spring.queryparameter.mongo.transformers.QueryCriter
 import io.github.manuelarte.spring.queryparameter.operators.EqualsOperator;
 import io.github.manuelarte.spring.queryparameter.operators.GreaterThanOperator;
 import io.github.manuelarte.spring.queryparameter.operators.GreaterThanOrEqualsOperator;
+import io.github.manuelarte.spring.queryparameter.operators.InOperator;
 import io.github.manuelarte.spring.queryparameter.operators.LowerThanOperator;
 import io.github.manuelarte.spring.queryparameter.operators.LowerThanOrEqualsOperator;
 import io.github.manuelarte.spring.queryparameter.operators.Operator;
@@ -69,6 +71,8 @@ public class MongoQueryParamConfig {
         isOperator(LowerThanOperator.class), new DefaultLowerThanCriteria<>());
     impl.addOperatorCriteriaSelector(isOperator(
         LowerThanOrEqualsOperator.class), new DefaultLowerThanOrEqualsCriteria<>());
+    impl.addOperatorCriteriaSelector(isOperator(
+        InOperator.class), new DefaultInCriteria<>());
     return impl;
   }
 
