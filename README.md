@@ -6,6 +6,7 @@ Query Parameter MongoDB is a library that allows you to add a query parameter to
 1. [Prerequisites](#prerequisites)
 2. [Installation](#installation)
 3. [Concatenate params](#concatenate-params)
+3. [Customization](#customization)
 
 ## Prerequisites
 
