@@ -4,7 +4,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import io.github.manuelarte.spring.queryparameter.mongo.QueryParameterMongoApplicationTests.ItConfiguration.ParentEntity;
+import io.github.manuelarte.spring.queryparameter.model.TypeTransformerRegistry;
+import io.github.manuelarte.spring.queryparameter.mongo.config.MongoQueryParamConfig;
 import io.github.manuelarte.spring.queryparameter.mongo.transformers.QueryCriteriaToMongoQueryTransformer;
 import io.github.manuelarte.spring.queryparameter.operators.EqualsOperator;
 import io.github.manuelarte.spring.queryparameter.operators.InOperator;
@@ -20,17 +21,19 @@ import org.bson.types.ObjectId;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
-@SpringBootTest
-@Import({QueryParameterMongoApplicationTests.ItConfiguration.class})
+@SpringBootTest(classes = QueryParameterMongoApplicationTests.class)
+@EnableWebMvc // needed for conversion service
+@EnableAutoConfiguration
+@Import({TypeTransformerRegistry.class, MongoQueryParamConfig.class})
 class QueryParameterMongoApplicationTests {
 
   @Autowired
@@ -54,7 +57,7 @@ class QueryParameterMongoApplicationTests {
     mongoTemplate.save(createParentEntity("Manuel", "Neuer", 10));
     final ParentEntity three = mongoTemplate.save(createParentEntity("Elisa", "Doncel", 31));
     final QueryCriteria queryCriteria = QueryCriteria.builder()
-        .criterion(new QueryCriterion("lastName", new EqualsOperator(), "Doncel"))
+        .criterion(new QueryCriterion<>("lastName", new EqualsOperator(), "Doncel"))
         .build();
     final Query query = queryCriteriaToMongoQueryTransformer
         .apply(ParentEntity.class, queryCriteria);
@@ -69,9 +72,9 @@ class QueryParameterMongoApplicationTests {
     final ParentEntity two = mongoTemplate.save(createParentEntity("Manuel", "Neuer", 10));
     mongoTemplate.save(createParentEntity("Elisa", "Doncel", 31));
     final QueryCriteria queryCriteria = QueryCriteria.builder()
-        .criterion(new QueryCriterion("firstName", new EqualsOperator(), "Manuel"))
+        .criterion(new QueryCriterion<>("firstName", new EqualsOperator(), "Manuel"))
         .other(new OtherCriteria(BooleanOperator.AND,
-            new QueryCriteria(new QueryCriterion("age", new LowerThanOperator(), "18"))))
+            new QueryCriteria(new QueryCriterion<>("age", new LowerThanOperator(), "18"))))
         .build();
     final Query query = queryCriteriaToMongoQueryTransformer
         .apply(ParentEntity.class, queryCriteria);
@@ -104,41 +107,31 @@ class QueryParameterMongoApplicationTests {
     return parentEntity;
   }
 
-  @SpringBootApplication
-  @EnableQueryParameter
-  public static class ItConfiguration {
+  @Document
+  public static class ParentEntity {
 
-    public static void main(String[] args) {
-      SpringApplication.run(ItConfiguration.class, args);
+    @Id
+    private ObjectId id;
+    private String firstName;
+    private String lastName;
+    private int age;
+
+    @Override
+    public boolean equals(Object o) {
+      if (this == o) {
+        return true;
+      }
+      if (o == null || getClass() != o.getClass()) {
+        return false;
+      }
+      ParentEntity that = (ParentEntity) o;
+      return Objects.equals(id, that.id);
     }
 
-    @Document
-    public static class ParentEntity {
-
-      @Id
-      private ObjectId id;
-      private String firstName;
-      private String lastName;
-      private int age;
-
-      @Override
-      public boolean equals(Object o) {
-        if (this == o) {
-          return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-          return false;
-        }
-        ParentEntity that = (ParentEntity) o;
-        return Objects.equals(id, that.id);
-      }
-
-      @Override
-      public int hashCode() {
-        return Objects.hash(id);
-      }
+    @Override
+    public int hashCode() {
+      return Objects.hash(id);
     }
-
   }
 
 }
