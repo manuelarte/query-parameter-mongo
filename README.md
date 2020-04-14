@@ -2,6 +2,11 @@
 
 Query Parameter MongoDB is a library that allows you to add a query parameter to your endpoints and apply that query to Spring Mongo Data.
 
+# Table of Contents
+1. [Prerequisites](#prerequisites)
+2. [Installation](#installation)
+3. [Concatenate params](#concatenate-params)
+
 ## Prerequisites
 
 - Spring Data Mongo
@@ -76,6 +81,13 @@ GET /documents?q=age:>18
 Below an example to match age >= 18
 ```bash
 GET /documents?q=age:>=18
+```
+
+# In (:in:(xxx,yyy,...))
+
+Below an example get gender in MALE and FEMALE
+```bash
+GET /documents?q=gender:in:(MALE,FEMALE)
 ```
 
 ## Concatenate params

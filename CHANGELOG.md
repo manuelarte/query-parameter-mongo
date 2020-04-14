@@ -8,7 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Added support for equals, lower than, lower than or equal, greater than, greather than or equal operators
+- Added support for equals, lower than, lower than or equal, greater than, greather than or equals, in operators
+- Added support to allow or not allow certain keys.
 
 ### Changed
 

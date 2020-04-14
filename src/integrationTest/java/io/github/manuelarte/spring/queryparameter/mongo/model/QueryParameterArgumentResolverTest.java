@@ -1,13 +1,14 @@
 package io.github.manuelarte.spring.queryparameter.mongo.model;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import io.github.manuelarte.spring.queryparameter.model.TypeTransformerRegistry;
+import io.github.manuelarte.spring.queryparameter.exceptions.QueryParserException;
+import io.github.manuelarte.spring.queryparameter.mongo.EnableQueryParameter;
 import io.github.manuelarte.spring.queryparameter.mongo.QueryParameter;
-import io.github.manuelarte.spring.queryparameter.mongo.config.MongoQueryParamConfig;
 import io.github.manuelarte.spring.queryparameter.mongo.model.QueryParameterArgumentResolverTest.TestController;
 import java.util.List;
 import java.util.Objects;
@@ -16,7 +17,6 @@ import org.bson.types.ObjectId;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
@@ -31,13 +31,13 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.util.NestedServletException;
 
 /**
- * This test class is just for debugging purposes
+ * This test class is just for debugging purposes.
  **/
 @SpringBootTest(classes = QueryParameterArgumentResolverTest.class)
 @AutoConfigureMockMvc
 @EnableWebMvc // needed for conversion service
-@EnableAutoConfiguration
-@Import({TestController.class, TypeTransformerRegistry.class, MongoQueryParamConfig.class})
+@EnableQueryParameter
+@Import({TestController.class})
 class QueryParameterArgumentResolverTest {
 
   @Autowired
@@ -49,6 +49,14 @@ class QueryParameterArgumentResolverTest {
         .andExpect(status().isOk()
             //.andExpect(jsonPath("$.content", hasSize(1)
         );
+  }
+
+  @Test
+  public void testArgumentResolverQueryNotAllowedKey() {
+    final Exception e = assertThrows(NestedServletException.class,
+        () -> mvc.perform(get("/api/parents?q=created_by::Manuel").contentType(APPLICATION_JSON))
+            .andExpect(status().isOk()));
+    assertTrue(e.getCause().getClass().equals(QueryParserException.class));
   }
 
   @Test
@@ -90,7 +98,8 @@ class QueryParameterArgumentResolverTest {
   public static class TestController {
 
     @GetMapping(value = "/parents")
-    public List<ParentEntity> getAll(@QueryParameter(document = ParentEntity.class) Query query) {
+    public List<ParentEntity> getAll(
+        @QueryParameter(document = ParentEntity.class, notAllowedKeys = "created_by") Query query) {
       return null;
     }
 
