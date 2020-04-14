@@ -5,8 +5,9 @@ Query Parameter MongoDB is a library that allows you to add a query parameter to
 # Table of Contents
 1. [Prerequisites](#prerequisites)
 2. [Installation](#installation)
-3. [Concatenate params](#concatenate-params)
-3. [Customization](#customization)
+3. [Supported Query Operations](#supported-query-operations)
+4. [Concatenate params](#concatenate-params)
+5. [Customization](#customization)
 
 ## Prerequisites
 
@@ -48,44 +49,44 @@ Then call that endpoint and use the available query operations:
 GET /documents?q=firstName::Manuel;age:<18
 ```
 
-## Query Operations supported
+## Supported Query Operations
 
-# Equals (::)
+### Equals (::)
 
 Below an example to match firstName == Manuel
 ```bash
 GET /documents?q=firstName::Manuel
 ```
 
-# Lower than (:<)
+### Lower than (:<)
 
 Below an example to match age < 18
 ```bash
 GET /documents?q=age:<18
 ```
 
-# Lower than or equal (:<=)
+### Lower than or equal (:<=)
 
 Below an example to match age <= 18
 ```bash
 GET /documents?q=age:<=18
 ```
 
-# Greater than (:>)
+### Greater than (:>)
 
 Below an example to match age > 18
 ```bash
 GET /documents?q=age:>18
 ```
 
-# Greater than or equal (:>=)
+### Greater than or equal (:>=)
 
 Below an example to match age >= 18
 ```bash
 GET /documents?q=age:>=18
 ```
 
-# In (:in:(xxx,yyy,...))
+### In (:in:(xxx,yyy,...))
 
 Below an example get gender in MALE and FEMALE
 ```bash
