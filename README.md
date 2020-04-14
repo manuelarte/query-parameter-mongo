@@ -104,6 +104,28 @@ If we want entities whose firstname is Manuel *or* age less than 18
 GET /documents?q=firstName::Manuel|age:<18
 ```
 
+## Customization
+
+### Allow or not allow keys
+
+It's possible to filter the keys that are allow or not allow to be queried (by default every key is allowed).
+As an example, if I only want to query by firstName and lastName
+```java
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<Entity>> findByQuerying(@QueryParameter(entity = Entity.class, allowedKeys={"firstName", "lastName"}) Specification<Entity> query) {
+        return ResponseEntity.ok(entityService.findAll(query));
+    }
+```
+Or if only want to not allow createdBy field
+```java
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<Entity>> findByQuerying(@QueryParameter(entity = Entity.class, notAllowedKeys="createdBy") Specification<Entity> query) {
+        return ResponseEntity.ok(entityService.findAll(query));
+    }
+```
+
+Then the parser will throw a QueryParserException if finds a not allowed key.
+
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
 
