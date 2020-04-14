@@ -10,6 +10,7 @@ Query Parameter MongoDB is a library that allows you to add a query parameter to
 
 ## Prerequisites
 
+- Java8 or above
 - Spring Data Mongo
 - The repositories you want to query needs to implement MongoRepository<D, ID>
 
