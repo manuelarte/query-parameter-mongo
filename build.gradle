@@ -42,7 +42,7 @@ sonarqube {
         property "sonar.projectKey", "manuelarte_query-parameter-mongo"
         property "sonar.organization", "manuelarte"
         property "sonar.host.url", "https://sonarcloud.io"
-        properties["sonar.tests"] += sourceSets.integrationTest.allSource.srcDirs
+        // properties["sonar.tests"] += sourceSets.integrationTest.allSource.srcDirs
     }
 }
 
