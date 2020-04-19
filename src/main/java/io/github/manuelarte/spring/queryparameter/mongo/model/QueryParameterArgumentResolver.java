@@ -41,9 +41,10 @@ public class QueryParameterArgumentResolver implements HandlerMethodArgumentReso
   }
 
   @Override
+  @SuppressWarnings("GetClassOnClass")
   public Object resolveArgument(final MethodParameter parameter,
       final ModelAndViewContainer mavContainer, final NativeWebRequest webRequest,
-      final WebDataBinderFactory binderFactory) throws Exception {
+      final WebDataBinderFactory binderFactory) {
     final QueryParameter queryParameter = parameter.getParameterAnnotation(QueryParameter.class);
     final HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
 
