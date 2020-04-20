@@ -14,6 +14,12 @@ ifdef::status[]
 image:https://img.shields.io/badge/license-MIT-blue.svg[MIT License, link=#copyright-and-license]
 image:https://circleci.com/gh/manuelarte/query-parameter-mongo.svg?style=shield[Build status (Circle CI), link={urc-ci-circleci}]
 image:https://img.shields.io/badge/version-{latest-version}-blue[Release version]
+
+image:https://sonarcloud.io/api/project_badges/measure?project=manuelarte_query-parameter-mongo&metric=alert_status[Sonarcloud Status]
+image:https://sonarcloud.io/api/project_badges/measure?project=manuelarte_query-parameter-mongo&metric=coverage[SonarCloud Coverage]
+image:https://sonarcloud.io/api/project_badges/measure?project=manuelarte_query-parameter-mongo&metric=bugs[SonarCloud Bugs]
+image:https://sonarcloud.io/api/project_badges/measure?project=manuelarte_query-parameter-mongo&metric=vulnerabilities[SonarCloud Vulnerabilities]
+
 endif::[]
 
 :toc: []
