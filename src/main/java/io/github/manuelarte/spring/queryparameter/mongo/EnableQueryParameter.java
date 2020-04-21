@@ -21,7 +21,6 @@ import org.springframework.context.annotation.Import;
 @Retention(RetentionPolicy.RUNTIME)
 @Import({EqualsOperator.class, GreaterThanOrEqualsOperator.class, GreaterThanOperator.class,
     LowerThanOrEqualsOperator.class, LowerThanOperator.class, InOperator.class,
-    QueryCriteriaConfig.class,
     QueryParameterArgumentResolver.class,
     WebMvcConfig.class,
     TypeTransformerRegistry.class,

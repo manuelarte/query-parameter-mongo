@@ -1,9 +1,9 @@
 package io.github.manuelarte.spring.queryparameter.mongo.transformers;
 
 import io.github.manuelarte.spring.queryparameter.model.TypeTransformerProvider;
-import io.github.manuelarte.spring.queryparameter.mongo.model.OperatorCriteriaProvider;
-import io.github.manuelarte.spring.queryparameter.mongo.operatorcriteria.OperatorCriteria;
+import io.github.manuelarte.spring.queryparameter.mongo.operatorcriteria.OperatorQueryCriteria;
 import io.github.manuelarte.spring.queryparameter.operators.Operator;
+import io.github.manuelarte.spring.queryparameter.operators.queryprovider.OperatorQueryProvider;
 import io.github.manuelarte.spring.queryparameter.query.BooleanOperator;
 import io.github.manuelarte.spring.queryparameter.query.OtherCriteria;
 import io.github.manuelarte.spring.queryparameter.query.QueryCriteria;
@@ -20,11 +20,11 @@ public class QueryCriteriaToMongoQueryTransformerImpl implements
     QueryCriteriaToMongoQueryTransformer {
 
   private final TypeTransformerProvider typeTransformerProvider;
-  private final OperatorCriteriaProvider operatorCriteriaProvider;
+  private final OperatorQueryProvider<OperatorQueryCriteria<Object>, Criteria> operatorCriteriaProvider;
 
   public QueryCriteriaToMongoQueryTransformerImpl(
       final TypeTransformerProvider typeTransformerProvider,
-      final OperatorCriteriaProvider operatorCriteriaProvider) {
+      final OperatorQueryProvider<OperatorQueryCriteria<Object>, Criteria> operatorCriteriaProvider) {
     this.typeTransformerProvider = typeTransformerProvider;
     this.operatorCriteriaProvider = operatorCriteriaProvider;
   }
@@ -84,8 +84,8 @@ public class QueryCriteriaToMongoQueryTransformerImpl implements
           queryCriterion.getKey()).transformValue(entity, queryCriterion.getKey(),
           queryCriterion.getValue());
     }
-    final OperatorCriteria<Object> operatorPredicate = operatorCriteriaProvider
-        .getOperatorCriteria(entity, queryCriterion.getKey(),
+    final OperatorQueryCriteria<Object> operatorPredicate = operatorCriteriaProvider
+        .getOperatorQuery(entity, queryCriterion.getKey(),
             (Operator<Object>) queryCriterion.getOperator());
     return operatorPredicate.apply(queryCriterion.getKey(), castedValue);
   }

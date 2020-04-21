@@ -27,6 +27,7 @@ sourceCompatibility = '1.8'
 
 repositories {
     mavenCentral()
+    maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
 }
 
 facets {
@@ -60,7 +61,7 @@ tasks.withType(JavaCompile).configureEach {
 dependencies {
     errorprone 'com.google.errorprone:error_prone_core:2.3.4'
 
-    implementation 'io.github.manuelarte.spring:query-parameter-model:0.0.1'
+    implementation 'io.github.manuelarte.spring:query-parameter-model:0.0.2-SNAPSHOT'
     compileOnly 'org.springframework.boot:spring-boot-starter-data-mongodb:2.2.6.RELEASE'
     compileOnly 'org.springframework.boot:spring-boot-starter-web:2.2.6.RELEASE'
 
@@ -130,4 +131,15 @@ nexus {
 nexusStaging {
     packageGroup = "io.github.manuelarte.spring" //optional if packageGroup == project.getGroup()
     // stagingProfileId = "yourStagingProfileId" //when not defined will be got from server using "packageGroup"
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+        }
+    }
+    repositories {
+        mavenLocal()
+    }
 }

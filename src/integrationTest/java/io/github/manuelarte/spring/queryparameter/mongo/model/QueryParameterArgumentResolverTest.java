@@ -9,7 +9,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import io.github.manuelarte.spring.queryparameter.exceptions.QueryParserException;
 import io.github.manuelarte.spring.queryparameter.mongo.EnableQueryParameter;
 import io.github.manuelarte.spring.queryparameter.mongo.QueryParameter;
+import io.github.manuelarte.spring.queryparameter.mongo.config.MongoQueryParamConfig;
 import io.github.manuelarte.spring.queryparameter.mongo.model.QueryParameterArgumentResolverTest.TestController;
+import io.github.manuelarte.spring.queryparameter.mongo.transformers.QueryCriteriaToMongoQueryTransformerImpl;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -37,7 +39,7 @@ import org.springframework.web.util.NestedServletException;
 @AutoConfigureMockMvc
 @EnableWebMvc // needed for conversion service
 @EnableQueryParameter
-@Import({TestController.class})
+@Import({MongoQueryParamConfig.class, QueryParameterArgumentResolver.class, TestController.class})
 class QueryParameterArgumentResolverTest {
 
   @Autowired

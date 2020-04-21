@@ -4,7 +4,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Component;
 
 @Component
-public class DefaultEqualsCriteria<V> implements OperatorCriteria<V> {
+public class DefaultEqualsCriteria<V> implements OperatorQueryCriteria<V> {
 
   @Override
   public Criteria apply(final String key, final V value) {
