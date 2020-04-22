@@ -6,7 +6,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import io.github.manuelarte.spring.queryparameter.model.TypeTransformerRegistry;
 import io.github.manuelarte.spring.queryparameter.mongo.config.MongoQueryParamConfig;
-import io.github.manuelarte.spring.queryparameter.mongo.transformers.QueryCriteriaToMongoQueryTransformer;
 import io.github.manuelarte.spring.queryparameter.operators.EqualsOperator;
 import io.github.manuelarte.spring.queryparameter.operators.InOperator;
 import io.github.manuelarte.spring.queryparameter.operators.LowerThanOperator;
@@ -14,6 +13,7 @@ import io.github.manuelarte.spring.queryparameter.query.BooleanOperator;
 import io.github.manuelarte.spring.queryparameter.query.OtherCriteria;
 import io.github.manuelarte.spring.queryparameter.query.QueryCriteria;
 import io.github.manuelarte.spring.queryparameter.query.QueryCriterion;
+import io.github.manuelarte.spring.queryparameter.transformers.QueryCriteriaTransformer;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -37,7 +37,7 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 class QueryParameterMongoApplicationTests {
 
   @Autowired
-  private QueryCriteriaToMongoQueryTransformer queryCriteriaToMongoQueryTransformer;
+  private QueryCriteriaTransformer<Query> queryCriteriaToMongoQueryTransformer;
 
   @Autowired
   private MongoTemplate mongoTemplate;

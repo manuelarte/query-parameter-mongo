@@ -1,17 +1,16 @@
 package io.github.manuelarte.spring.queryparameter.mongo.model;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import io.github.manuelarte.spring.queryparameter.QueryParameter;
 import io.github.manuelarte.spring.queryparameter.exceptions.QueryParserException;
 import io.github.manuelarte.spring.queryparameter.mongo.EnableQueryParameter;
-import io.github.manuelarte.spring.queryparameter.mongo.QueryParameter;
-import io.github.manuelarte.spring.queryparameter.mongo.config.MongoQueryParamConfig;
 import io.github.manuelarte.spring.queryparameter.mongo.model.QueryParameterArgumentResolverTest.TestController;
-import io.github.manuelarte.spring.queryparameter.mongo.transformers.QueryCriteriaToMongoQueryTransformerImpl;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -39,7 +38,7 @@ import org.springframework.web.util.NestedServletException;
 @AutoConfigureMockMvc
 @EnableWebMvc // needed for conversion service
 @EnableQueryParameter
-@Import({MongoQueryParamConfig.class, QueryParameterArgumentResolver.class, TestController.class})
+@Import({TestController.class})
 class QueryParameterArgumentResolverTest {
 
   @Autowired
@@ -58,7 +57,7 @@ class QueryParameterArgumentResolverTest {
     final Exception e = assertThrows(NestedServletException.class,
         () -> mvc.perform(get("/api/parents?q=created_by::Manuel").contentType(APPLICATION_JSON))
             .andExpect(status().isOk()));
-    assertTrue(e.getCause().getClass().equals(QueryParserException.class));
+    assertEquals(QueryParserException.class, e.getCause().getClass());
   }
 
   @Test
@@ -101,19 +100,19 @@ class QueryParameterArgumentResolverTest {
 
     @GetMapping(value = "/parents")
     public List<ParentEntity> getAll(
-        @QueryParameter(document = ParentEntity.class, notAllowedKeys = "created_by") Query query) {
+        @QueryParameter(entity = ParentEntity.class, notAllowedKeys = "created_by") Query query) {
       return null;
     }
 
     @GetMapping(value = "/optional/parents")
     public List<ParentEntity> getAllOptional(
-        @QueryParameter(document = ParentEntity.class) Optional<Query> query) {
+        @QueryParameter(entity = ParentEntity.class) Optional<Query> query) {
       return null;
     }
 
     @GetMapping(value = "/not-allowed/parents")
     public List<ParentEntity> getAllOptional(
-        @QueryParameter(document = ParentEntity.class) ParentEntity query) {
+        @QueryParameter(entity = ParentEntity.class) ParentEntity query) {
       return null;
     }
 

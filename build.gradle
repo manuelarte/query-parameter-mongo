@@ -132,14 +132,3 @@ nexusStaging {
     packageGroup = "io.github.manuelarte.spring" //optional if packageGroup == project.getGroup()
     // stagingProfileId = "yourStagingProfileId" //when not defined will be got from server using "packageGroup"
 }
-
-publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            from components.java
-        }
-    }
-    repositories {
-        mavenLocal()
-    }
-}
