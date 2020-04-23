@@ -1,0 +1,16 @@
+GET http://localhost:8080/api/v1/example1s
+Accept: application/json
+
+###
+GET http://localhost:8080/api/v1/example1s?q=firstName::Keena
+Accept: application/json
+
+###
+GET http://localhost:8080/api/v1/example1s?q=age:>=22
+Accept: application/json
+
+###
+GET http://localhost:8080/api/v1/example2s?q=age:>22
+Accept: application/json
+
+###

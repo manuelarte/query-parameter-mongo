@@ -2,92 +2,104 @@ package io.github.manuelarte.spring.queryparameter.mongo.config;
 
 import io.github.manuelarte.spring.queryparameter.config.QueryCriteriaConfig;
 import io.github.manuelarte.spring.queryparameter.model.TypeTransformerProvider;
-import io.github.manuelarte.spring.queryparameter.model.TypeTransformerRegistry;
-import io.github.manuelarte.spring.queryparameter.mongo.model.OperatorCriteriaProvider;
-import io.github.manuelarte.spring.queryparameter.mongo.model.OperatorCriteriaProviderImpl;
 import io.github.manuelarte.spring.queryparameter.mongo.operatorcriteria.DefaultEqualsCriteria;
 import io.github.manuelarte.spring.queryparameter.mongo.operatorcriteria.DefaultGreaterThanCriteria;
 import io.github.manuelarte.spring.queryparameter.mongo.operatorcriteria.DefaultGreaterThanOrEqualsCriteria;
 import io.github.manuelarte.spring.queryparameter.mongo.operatorcriteria.DefaultInCriteria;
 import io.github.manuelarte.spring.queryparameter.mongo.operatorcriteria.DefaultLowerThanCriteria;
 import io.github.manuelarte.spring.queryparameter.mongo.operatorcriteria.DefaultLowerThanOrEqualsCriteria;
-import io.github.manuelarte.spring.queryparameter.mongo.transformers.QueryCriteriaToMongoQueryTransformer;
+import io.github.manuelarte.spring.queryparameter.mongo.operatorcriteria.DefaultNotEqualsCriteria;
+import io.github.manuelarte.spring.queryparameter.mongo.operatorcriteria.DefaultNotGreaterThanCriteria;
+import io.github.manuelarte.spring.queryparameter.mongo.operatorcriteria.DefaultNotGreaterThanOrEqualsCriteria;
+import io.github.manuelarte.spring.queryparameter.mongo.operatorcriteria.DefaultNotInCriteria;
+import io.github.manuelarte.spring.queryparameter.mongo.operatorcriteria.DefaultNotLowerThanCriteria;
+import io.github.manuelarte.spring.queryparameter.mongo.operatorcriteria.DefaultNotLowerThanOrEqualsCriteria;
+import io.github.manuelarte.spring.queryparameter.mongo.operatorcriteria.OperatorQueryCriteria;
 import io.github.manuelarte.spring.queryparameter.mongo.transformers.QueryCriteriaToMongoQueryTransformerImpl;
+import io.github.manuelarte.spring.queryparameter.operators.AbstractMiddleOperator;
 import io.github.manuelarte.spring.queryparameter.operators.EqualsOperator;
 import io.github.manuelarte.spring.queryparameter.operators.GreaterThanOperator;
 import io.github.manuelarte.spring.queryparameter.operators.GreaterThanOrEqualsOperator;
 import io.github.manuelarte.spring.queryparameter.operators.InOperator;
 import io.github.manuelarte.spring.queryparameter.operators.LowerThanOperator;
 import io.github.manuelarte.spring.queryparameter.operators.LowerThanOrEqualsOperator;
+import io.github.manuelarte.spring.queryparameter.operators.NotAbstractMiddleOperatorOperator;
+import io.github.manuelarte.spring.queryparameter.operators.NotInOperator;
 import io.github.manuelarte.spring.queryparameter.operators.Operator;
-import io.github.manuelarte.spring.queryparameter.transformers.ClassFieldTransformerImpl;
-import io.github.manuelarte.spring.queryparameter.transformers.TypeTransformer;
+import io.github.manuelarte.spring.queryparameter.operators.queryprovider.OperatorQueryProvider;
+import io.github.manuelarte.spring.queryparameter.operators.queryprovider.OperatorQueryProviderImpl;
+import io.github.manuelarte.spring.queryparameter.transformers.QueryCriteriaTransformer;
 import io.github.manuelarte.spring.queryparameter.util.TriPredicate;
-import java.util.List;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.core.convert.ConversionService;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 
 @Configuration
 @Import(QueryCriteriaConfig.class)
 public class MongoQueryParamConfig {
 
-  private final List<QueryParameterConfig> queryParameterConfigs;
-
-  public MongoQueryParamConfig(final List<QueryParameterConfig> queryParameterConfigs) {
-    this.queryParameterConfigs = queryParameterConfigs;
-  }
-
-  @Bean("defaultTypeTransformer")
-  public TypeTransformer defaultTypeTransformer(final ConversionService conversionService) {
-    return new ClassFieldTransformerImpl(conversionService);
+  @Bean
+  @ConditionalOnMissingBean
+  public QueryCriteriaTransformer<Query> queryCriteriaToMongoQueryTransformer(
+      final TypeTransformerProvider typeTransformerProvider,
+      final OperatorQueryProvider<OperatorQueryCriteria<Object>, Criteria> operatorCriteriaProvider) {
+    return new QueryCriteriaToMongoQueryTransformerImpl(typeTransformerProvider, operatorCriteriaProvider);
   }
 
   @Bean
   @ConditionalOnMissingBean
-  public TypeTransformerProvider typeTransformerProvider(
-      @Qualifier("defaultTypeTransformer") final TypeTransformer typeTransformer,
-      final TypeTransformerRegistry typeTransformerRegistry) {
-    queryParameterConfigs.forEach(it -> it.addTypeTransformer(typeTransformerRegistry));
-    final TypeTransformerProvider typeTransformerProvider =
-        new TypeTransformerProvider(typeTransformerRegistry, typeTransformer);
-    return typeTransformerProvider;
-  }
-
-  @Bean
-  @ConditionalOnMissingBean
-  public OperatorCriteriaProvider operatorsPredicateProvider() {
-    final OperatorCriteriaProvider impl = new OperatorCriteriaProviderImpl();
-    impl.addOperatorCriteriaSelector(
+  public OperatorQueryProvider<OperatorQueryCriteria<Object>, Criteria> operatorsPredicateProvider() {
+    final OperatorQueryProvider<OperatorQueryCriteria<Object>, Criteria> impl = new OperatorQueryProviderImpl<>();
+    impl.addOperatorQuerySelector(
         isOperator(EqualsOperator.class), new DefaultEqualsCriteria<>());
-    impl.addOperatorCriteriaSelector(
+    impl.addOperatorQuerySelector(
+        isNotOperator(EqualsOperator.class), new DefaultNotEqualsCriteria<>()
+    );
+
+    impl.addOperatorQuerySelector(
         isOperator(GreaterThanOperator.class), new DefaultGreaterThanCriteria<>());
-    impl.addOperatorCriteriaSelector(isOperator(
+    impl.addOperatorQuerySelector(
+        isNotOperator(GreaterThanOperator.class), new DefaultNotGreaterThanCriteria<>());
+
+    impl.addOperatorQuerySelector(isOperator(
         GreaterThanOrEqualsOperator.class), new DefaultGreaterThanOrEqualsCriteria<>());
-    impl.addOperatorCriteriaSelector(
+    impl.addOperatorQuerySelector(isNotOperator(
+        GreaterThanOrEqualsOperator.class), new DefaultNotGreaterThanOrEqualsCriteria<>());
+
+    impl.addOperatorQuerySelector(
         isOperator(LowerThanOperator.class), new DefaultLowerThanCriteria<>());
-    impl.addOperatorCriteriaSelector(isOperator(
+    impl.addOperatorQuerySelector(
+        isNotOperator(LowerThanOperator.class), new DefaultNotLowerThanCriteria<>());
+
+    impl.addOperatorQuerySelector(isOperator(
         LowerThanOrEqualsOperator.class), new DefaultLowerThanOrEqualsCriteria<>());
-    impl.addOperatorCriteriaSelector(isOperator(
+    impl.addOperatorQuerySelector(isNotOperator(
+        LowerThanOrEqualsOperator.class), new DefaultNotLowerThanOrEqualsCriteria<>());
+
+    impl.addOperatorQuerySelector(isOperator(
         InOperator.class), new DefaultInCriteria<>());
+    impl.addOperatorQuerySelector(isOperator(
+        NotInOperator.class), new DefaultNotInCriteria<>());
     return impl;
   }
 
-  @Bean
-  @ConditionalOnMissingBean
-  public QueryCriteriaToMongoQueryTransformer queryCriteriaToMongoQueryTransformer(
-      final TypeTransformerProvider typeTransformerProvider,
-      final OperatorCriteriaProvider operatorsPredicateProvider) {
-    return new QueryCriteriaToMongoQueryTransformerImpl(typeTransformerProvider,
-        operatorsPredicateProvider);
+  private TriPredicate<Class<?>, String, Operator<Object>> isOperator(
+      Class<? extends Operator<?>> operatorClass) {
+    return (x, y, z) -> z.getClass().equals(operatorClass);
   }
 
-  private TriPredicate<Class<?>, String, Operator<Object>> isOperator(
-      Class<? extends Operator> operatorClass) {
-    return (x, y, z) -> z.getClass().equals(operatorClass);
+  private TriPredicate<Class<?>, String, Operator<Object>> isNotOperator(
+      final Class<? extends AbstractMiddleOperator> abstractMiddleOperator) {
+    return (x, y, z) -> {
+      if (NotAbstractMiddleOperatorOperator.class.isInstance(z)) {
+        final NotAbstractMiddleOperatorOperator casted = NotAbstractMiddleOperatorOperator.class.cast(z);
+        return casted.getAbstractMiddleOperator().getClass().equals(abstractMiddleOperator);
+      }
+      return false;
+    };
   }
 
 }

@@ -1,0 +1,1 @@
+Test project to check how to use @QueryParameter

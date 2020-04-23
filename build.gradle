@@ -22,7 +22,7 @@ plugins {
 apply plugin: 'com.bmuschko.nexus'
 
 group = 'io.github.manuelarte.spring'
-version = '0.0.1'
+version = '0.0.2'
 sourceCompatibility = '1.8'
 
 repositories {
@@ -60,7 +60,7 @@ tasks.withType(JavaCompile).configureEach {
 dependencies {
     errorprone 'com.google.errorprone:error_prone_core:2.3.4'
 
-    implementation 'io.github.manuelarte.spring:query-parameter-model:0.0.1'
+    implementation 'io.github.manuelarte.spring:query-parameter-model:0.0.2'
     compileOnly 'org.springframework.boot:spring-boot-starter-data-mongodb:2.2.6.RELEASE'
     compileOnly 'org.springframework.boot:spring-boot-starter-web:2.2.6.RELEASE'
 

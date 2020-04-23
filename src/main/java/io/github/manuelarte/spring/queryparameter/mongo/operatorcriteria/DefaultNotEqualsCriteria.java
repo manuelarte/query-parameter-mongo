@@ -4,11 +4,12 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Component;
 
 @Component
-public class DefaultLowerThanOrEqualsCriteria<V> implements OperatorQueryCriteria<V> {
+public class DefaultNotEqualsCriteria<V> implements OperatorQueryCriteria<V> {
 
   @Override
   public Criteria apply(final String key, final V value) {
-    return Criteria.where(key).lte(value);
+    return Criteria.where(key).ne(value);
   }
+
 
 }
