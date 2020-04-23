@@ -8,11 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Added support for not operators
-
-### Changed
-
-### Removed
+- Refactor to the new model 0.0.2 changes.
+- Added support for not operators.
 
 ## [0.0.1] - 2020-04-20
 
