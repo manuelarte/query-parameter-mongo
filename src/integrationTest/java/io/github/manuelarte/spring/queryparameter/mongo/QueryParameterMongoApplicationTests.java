@@ -9,6 +9,9 @@ import io.github.manuelarte.spring.queryparameter.mongo.config.MongoQueryParamCo
 import io.github.manuelarte.spring.queryparameter.operators.EqualsOperator;
 import io.github.manuelarte.spring.queryparameter.operators.InOperator;
 import io.github.manuelarte.spring.queryparameter.operators.LowerThanOperator;
+import io.github.manuelarte.spring.queryparameter.operators.LowerThanOrEqualsOperator;
+import io.github.manuelarte.spring.queryparameter.operators.NotAbstractMiddleOperatorOperator;
+import io.github.manuelarte.spring.queryparameter.operators.NotInOperator;
 import io.github.manuelarte.spring.queryparameter.query.BooleanOperator;
 import io.github.manuelarte.spring.queryparameter.query.OtherCriteria;
 import io.github.manuelarte.spring.queryparameter.query.QueryCriteria;
@@ -18,6 +21,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import org.bson.types.ObjectId;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -96,6 +100,55 @@ class QueryParameterMongoApplicationTests {
     final List<ParentEntity> actual = mongoTemplate.find(query, ParentEntity.class);
     assertEquals(2, actual.size());
     assertThat(actual, containsInAnyOrder(one, two));
+  }
+
+  @Test
+  public void testGetParentEntityNotEqualsCriterion() {
+    final ParentEntity one = mongoTemplate.save(createParentEntity("Manuel", "Doncel", 33));
+    final ParentEntity two = mongoTemplate.save(createParentEntity("Manuel", "Neuer", 10));
+    final ParentEntity expected = mongoTemplate.save(createParentEntity("Elisa", "Doncel", 31));
+    final QueryCriteria queryCriteria = QueryCriteria.builder()
+        .criterion(new QueryCriterion<>("firstName", new NotAbstractMiddleOperatorOperator(new EqualsOperator()),
+            "Manuel"))
+        .build();
+    final Query query = queryCriteriaToMongoQueryTransformer
+        .apply(ParentEntity.class, queryCriteria);
+    final List<ParentEntity> actual = mongoTemplate.find(query, ParentEntity.class);
+    assertEquals(1, actual.size());
+    assertThat(actual, Matchers.not(containsInAnyOrder(one, two)));
+    assertEquals(expected, actual.get(0));
+  }
+
+  @Test
+  public void testGetParentEntityNotLowerThanOrEqualsCriterion() {
+    final ParentEntity one = mongoTemplate.save(createParentEntity("Manuel", "Doncel", 33));
+    final ParentEntity two = mongoTemplate.save(createParentEntity("Manuel", "Neuer", 10));
+    final ParentEntity three = mongoTemplate.save(createParentEntity("Elisa", "Doncel", 31));
+    final QueryCriteria queryCriteria = QueryCriteria.builder()
+        .criterion(new QueryCriterion<>("age", new NotAbstractMiddleOperatorOperator(new LowerThanOrEqualsOperator()),
+            "30"))
+        .build();
+    final Query query = queryCriteriaToMongoQueryTransformer
+        .apply(ParentEntity.class, queryCriteria);
+    final List<ParentEntity> actual = mongoTemplate.find(query, ParentEntity.class);
+    assertEquals(2, actual.size());
+    assertThat(actual, containsInAnyOrder(one, three));
+  }
+
+  @Test
+  public void testGetParentEntityNotInCriterion() {
+    final ParentEntity one = mongoTemplate.save(createParentEntity("Manuel", "Doncel", 33));
+    final ParentEntity two = mongoTemplate.save(createParentEntity("Manuel", "Neuer", 10));
+    final ParentEntity expected = mongoTemplate.save(createParentEntity("Elisa", "Doncel", 31));
+    final QueryCriteria queryCriteria = QueryCriteria.builder()
+        .criterion(new QueryCriterion<>("age", new NotInOperator(new InOperator()), Arrays.asList("33", "10")))
+        .build();
+    final Query query = queryCriteriaToMongoQueryTransformer
+        .apply(ParentEntity.class, queryCriteria);
+    final List<ParentEntity> actual = mongoTemplate.find(query, ParentEntity.class);
+    assertEquals(1, actual.size());
+    assertThat(actual, Matchers.not(containsInAnyOrder(one, two)));
+    assertEquals(expected, actual.get(0));
   }
 
   private ParentEntity createParentEntity(final String firstName, final String lastName,
