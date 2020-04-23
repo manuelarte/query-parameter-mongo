@@ -1,8 +1,8 @@
 package io.github.manuelarte.spring.queryparameter.mongo.example.config;
 
 import com.github.javafaker.Faker;
-import io.github.manuelarte.spring.queryparameter.mongo.example.entities.Parent;
-import io.github.manuelarte.spring.queryparameter.mongo.example.repositories.ParentRepository;
+import io.github.manuelarte.spring.queryparameter.mongo.example.entities.Example1;
+import io.github.manuelarte.spring.queryparameter.mongo.example.repositories.Example1Repository;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
@@ -15,18 +15,18 @@ import org.springframework.stereotype.Component;
 @lombok.RequiredArgsConstructor
 public class TestData {
 
-  private final ParentRepository parentRepository;
+  private final Example1Repository parentRepository;
 
   @EventListener(ApplicationReadyEvent.class)
   public void populateTestData() {
-    List<Parent> collect = IntStream.range(0, 4).mapToObj(it -> createFakeParent())
+    List<Example1> collect = IntStream.range(0, 4).mapToObj(it -> createFakeParent())
         .collect(Collectors.toList());
     parentRepository.saveAll(collect);
   }
 
-  private Parent createFakeParent() {
+  private Example1 createFakeParent() {
     final Faker faker = new Faker();
-    return Parent.builder()
+    return Example1.builder()
         .firstName(faker.name().firstName())
         .lastName(faker.name().lastName())
         .age(new Random().nextInt(100))
